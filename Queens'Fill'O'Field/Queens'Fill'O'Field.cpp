@@ -8,6 +8,7 @@
 int main()
 {
 	//solve_bfs();
+	solve_dfs();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

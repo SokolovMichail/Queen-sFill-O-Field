@@ -29,11 +29,7 @@ void print_output(CurrentField * res)
 	std::cout << std::endl;
 }
 
-CurrentField* dfs_primer()
-{
-	CurrentField * start = new CurrentField();
-	return dfs(start);
-}
+
 
 CurrentField* dfs(CurrentField* curr)
 {
@@ -52,6 +48,7 @@ CurrentField* dfs(CurrentField* curr)
 		for (size_t i = 0; i < rs->size(); i++)
 		{
 			CurrentField * now_at = new CurrentField(curr);
+			now_at->place_queen(rs->at(i));
 			CurrentField* c = dfs(now_at);
 			if (c != nullptr)
 			{
@@ -62,6 +59,12 @@ CurrentField* dfs(CurrentField* curr)
 	delete rs;
 	return nullptr;
 
+}
+
+CurrentField* dfs_primer()
+{
+	CurrentField * start = new CurrentField();
+	return dfs(start);
 }
 
 void solve_dfs()
