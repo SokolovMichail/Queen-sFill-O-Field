@@ -153,11 +153,13 @@
   <ItemGroup>
     <ClInclude Include="..\..\Queens%27Fill%27O%27Field\Queens%27Fill%27O%27Field\Algorithms.h" />
     <ClInclude Include="..\..\Queens%27Fill%27O%27Field\Queens%27Fill%27O%27Field\CurrentField.h" />
+    <ClInclude Include="GeneticField.h" />
     <ClInclude Include="..\..\Queens%27Fill%27O%27Field\Queens%27Fill%27O%27Field\pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Queens%27Fill%27O%27Field\Queens%27Fill%27O%27Field\Algorithms.cpp" />
     <ClCompile Include="..\..\Queens%27Fill%27O%27Field\Queens%27Fill%27O%27Field\CurrentField.cpp" />
+    <ClCompile Include="GeneticField.cpp" />
     <ClCompile Include="..\..\Queens%27Fill%27O%27Field\Queens%27Fill%27O%27Field\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

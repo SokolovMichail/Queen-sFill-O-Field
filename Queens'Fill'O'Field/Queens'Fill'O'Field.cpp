@@ -8,7 +8,9 @@
 int main()
 {
 	//solve_bfs();
-	solve_dfs();
+	//solve_dfs();
+	solve_genetic();
+	
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

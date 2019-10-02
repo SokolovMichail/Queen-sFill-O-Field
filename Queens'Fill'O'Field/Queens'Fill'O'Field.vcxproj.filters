@@ -24,6 +24,9 @@
     <ClInclude Include="..\..\Queens%27Fill%27O%27Field\Queens%27Fill%27O%27Field\Algorithms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GeneticField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Queens%27Fill%27O%27Field\Queens%27Fill%27O%27Field\pch.cpp">
@@ -36,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Queens%27Fill%27O%27Field\Queens%27Fill%27O%27Field\Algorithms.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneticField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
