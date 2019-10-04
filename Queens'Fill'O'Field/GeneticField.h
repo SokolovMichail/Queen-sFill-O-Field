@@ -38,6 +38,8 @@ public:
 	std::vector<int>* get_unoccupied_and_unbeaten_cells(int depth, int dim);
 	void place_queen(int x,int y, int dim);
 	int get_score(int dim);
+	GeneticField* gemmate(int dim);
+	GeneticField* crossbreed(GeneticField* parent2, int dim);
 
 
 	~GeneticField()

@@ -9,7 +9,8 @@ int main()
 {
 	//solve_bfs();
 	//solve_dfs();
-	solve_genetic();
+	//solve_genetic();
+	solve_burnout();
 	
 }
 

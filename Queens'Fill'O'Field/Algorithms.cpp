@@ -2,6 +2,15 @@
 #include "CurrentField.h"
 #include "GeneticField.h"
 
+struct CustomCompare
+{
+	bool operator()(std::tuple<GeneticField*, int> a, std::tuple<GeneticField*, int> b)
+	{
+		return std::get<1>(a) > std::get<1>(b);
+	}
+
+};
+
 void print_output(CurrentField * res,int dim)
 {
 	std::cout << std::endl;
@@ -60,10 +69,17 @@ void print_output(GeneticField* res, int dim)
 
 GeneticField* genetic_algorithm(int dim)
 {
-	std::priority_queue<std::tuple<GeneticField*, int>, std::vector<std::tuple<GeneticField*, int>>, CustomCompare> specimen;
+	int dim_queue= 70;
+	std::priority_queue<std::tuple<GeneticField*, int>,
+		std::vector<std::tuple<GeneticField*,
+		int>>, CustomCompare>* specimen = new std::priority_queue<std::tuple<GeneticField*, int>,
+		std::vector<std::tuple<GeneticField*,
+		int>>, CustomCompare>();
 	std::random_device rd;
 	std::mt19937 g(rd());
-	for (size_t i = 0; i < 16; i++)
+	std::mt19937 g1(std::chrono::system_clock::now().time_since_epoch().count());
+	srand(time(NULL));
+	for (size_t i = 0; i < dim_queue; i++)
 	{
 		GeneticField* curr = new GeneticField(dim);
 		for (size_t i = 0; i < dim; i++)
@@ -78,26 +94,146 @@ GeneticField* genetic_algorithm(int dim)
 			curr->place_queen(i, rs->at(0), dim);
 			delete rs;
 		}
-		specimen.push(std::make_tuple(curr, curr->get_score(dim)));
+		specimen->push(std::make_tuple(curr, curr->get_score(dim)));
+		//print_output(curr, dim);
 	}
+	int generation = 0;
+	while (true)
+	{
+		std::cout << generation << std::endl;
+		generation++;
+		std::vector<GeneticField*>* curr_layouts = new std::vector<GeneticField*>();
+		for (size_t i = 0; i < dim_queue; i++)
+		{
+			
+			int score = std::get<1>(specimen->top());
+			std::cout << score << " ";
+			if (score <= 0)
+			{
+				return std::get<0>(specimen->top());
+			}
+			curr_layouts->push_back(std::get<0>(specimen->top()));
+			specimen->pop();
+		}
+		std::cout << std::endl;
+		for (size_t i = 0; i < dim_queue; i++)
+		{
+			int parent1 = rand() % dim_queue;
+			int parent2 = rand() % dim_queue;
+			int prob = rand() % 100;
+			if (prob % 10 == 0)
+			{
+				GeneticField* tmp = curr_layouts->at(parent1)->crossbreed(curr_layouts->at(parent2), dim);
+				GeneticField* tmp1 = tmp->gemmate(dim);
+				delete tmp;
+				tmp = tmp1;
+				specimen->push(std::make_tuple(tmp, tmp->get_score(dim)));
+				//print_output(tmp, dim);
+			}
+			else
+			{
+				GeneticField* tmp = curr_layouts->at(parent1)->crossbreed(curr_layouts->at(parent2), dim);
+				specimen->push(std::make_tuple(tmp, tmp->get_score(dim)));
+				//print_output(tmp,dim);
+			}
+			//print_output(tmp, dim);
+			
+		}
+		std::priority_queue<std::tuple<GeneticField*, int>, std::vector<std::tuple<GeneticField*, int>>, CustomCompare>* specimen_new
+			= new std::priority_queue<std::tuple<GeneticField*, int>, std::vector<std::tuple<GeneticField*, int>>, CustomCompare>();
+		for (size_t i = 0; i < dim; i++)
+		{
+			specimen->push(std::make_tuple(curr_layouts->at(i),curr_layouts->at(i)->get_score(dim)));
+		}
+		for (size_t i = 0; i < dim_queue; i++)
+		{
+			specimen_new->push(specimen->top());
+			specimen->pop();
+		}
+		delete specimen;
+		specimen = specimen_new;
+		delete curr_layouts;
 
-	
-
+	}
 }
+
+
+
 
 void solve_genetic()
 {
-	genetic_algorithm(8);
+	int dim = 8;
+	auto starttime = std::chrono::steady_clock::now();
+	GeneticField * res = genetic_algorithm(dim);
+	print_output(res, dim);
+	auto endtime = std::chrono::steady_clock::now();
+	auto difference = endtime - starttime;
+	std::cout << "Time elapsed: "
+		<< std::fixed
+		<< std::chrono::duration_cast<std::chrono::nanoseconds>(difference).count() / 1e+9
+		<< " seconds"
+		<< std::endl;
 }
 
-struct CustomCompare
+GeneticField* burnout(int dim)
 {
-	bool operator()(std::tuple<GeneticField*, int> a, std::tuple<GeneticField*, int> b)
+	std::random_device rd;
+	std::mt19937 g(rd());
+	GeneticField* curr = new GeneticField(dim);
+	for (size_t i = 0; i < dim; i++)
 	{
-		return std::get<1>(a) > std::get<1>(b);
+		std::vector<int>* rs = curr->get_unoccupied_and_unbeaten_cells(i, dim);
+		if (rs->size() == 0)
+		{
+		}
+		std::shuffle(rs->begin(), rs->end(), g);
+		curr->place_queen(i, rs->at(0), dim);
+		delete rs;
 	}
+	double temp = curr->get_score(dim);
+	double fin_temp = 0.00001;
+	double alpha = 0.98;
+	int counter = 0;
+	while (temp > fin_temp)
+	{
+		counter++;
+		GeneticField* new_one = curr->gemmate(dim);
+		int z = new_one->get_score(dim);
+		if (z < temp)
+		{
+			delete curr;
+			curr = new_one;
+		}
+		else
+		{
+			if (exp((temp - z) / temp) > 0.5)
+			{
+				delete curr;
+				curr = new_one;
+			}
+		}
+		temp = (temp * alpha / (counter*1.0));
+		
+	}
+	return curr;
 
-};
+}
+
+void solve_burnout()
+{
+	int dim = 8;
+	auto starttime = std::chrono::steady_clock::now();
+	GeneticField * res = burnout(dim);
+	print_output(res, dim);
+	auto endtime = std::chrono::steady_clock::now();
+	auto difference = endtime - starttime;
+	std::cout << "Time elapsed: "
+		<< std::fixed
+		<< std::chrono::duration_cast<std::chrono::nanoseconds>(difference).count() / 1e+9
+		<< " seconds"
+		<< std::endl;
+}
+
 
 CurrentField* dfs(CurrentField* curr,int dim)
 {
@@ -128,6 +264,8 @@ CurrentField* dfs(CurrentField* curr,int dim)
 	return nullptr;
 
 }
+
+
 
 CurrentField* dfs_primer(int dim)
 {
@@ -186,7 +324,7 @@ CurrentField * bfs(int dim)
 
 void solve_bfs()
 {
-	int dim = 8;
+	int dim =12;
 	auto starttime = std::chrono::steady_clock::now();
 	CurrentField * res = bfs(dim);
 	print_output(res,dim);
