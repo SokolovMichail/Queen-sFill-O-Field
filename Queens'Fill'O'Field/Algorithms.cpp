@@ -69,7 +69,7 @@ void print_output(GeneticField* res, int dim)
 
 GeneticField* genetic_algorithm(int dim)
 {
-	int dim_queue= 70;
+	int dim_queue= 40;
 	std::priority_queue<std::tuple<GeneticField*, int>,
 		std::vector<std::tuple<GeneticField*,
 		int>>, CustomCompare>* specimen = new std::priority_queue<std::tuple<GeneticField*, int>,
@@ -100,7 +100,8 @@ GeneticField* genetic_algorithm(int dim)
 	int generation = 0;
 	while (true)
 	{
-		std::cout << generation << std::endl;
+		std::cout << "Generation " << generation << std::endl;
+		std::cout << "Conflicts in Generation  ";
 		generation++;
 		std::vector<GeneticField*>* curr_layouts = new std::vector<GeneticField*>();
 		for (size_t i = 0; i < dim_queue; i++)
@@ -190,11 +191,11 @@ GeneticField* burnout(int dim)
 		curr->place_queen(i, rs->at(0), dim);
 		delete rs;
 	}
-	double temp = curr->get_score(dim);
+	double temp = 200;
 	double fin_temp = 0.00001;
-	double alpha = 0.98;
+	double alpha = 0.99;
 	int counter = 0;
-	while (temp > fin_temp)
+	while ( curr->get_score(dim) != 0 && counter < 400)
 	{
 		counter++;
 		GeneticField* new_one = curr->gemmate(dim);
@@ -206,15 +207,18 @@ GeneticField* burnout(int dim)
 		}
 		else
 		{
-			if (exp((temp - z) / temp) > 0.5)
+			if (temp >= 0&&exp((temp - z) / temp) > 0.8)
 			{
+				std::cout << "Here!" << std::endl;
 				delete curr;
 				curr = new_one;
 			}
 		}
-		temp = (temp * alpha / (counter*1.0));
+		temp -= 1;// (temp * alpha / (counter*1.0));
+		std::cout << "Current Temperature" << temp << " and Current score is " << curr->get_score(dim) << std::endl;
 		
 	}
+	std::cout << curr->get_score(dim) << std::endl;
 	return curr;
 
 }

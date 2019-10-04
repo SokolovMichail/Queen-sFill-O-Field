@@ -79,8 +79,12 @@ GeneticField * GeneticField::gemmate(int dim)
 	int source = rand() % dim;
 	int target = rand() % dim;
 	GeneticField* res = new GeneticField(this, dim);
-	std::swap(res->field[x_values.at(source)][y_values.at(source)],
-		res->field[x_values.at(target)][y_values.at(target)]);
+	std::swap(res->field[x_values.at(source)][y_values.at(target)],
+		res->field[x_values.at(source)][y_values.at(source)]);
+	std::swap(res->field[x_values.at(target)][y_values.at(target)],
+		res->field[x_values.at(target)][y_values.at(source)]);
+	//print_output(this, dim);
+	//print_output(res, dim);
 	return res;
 
 }
